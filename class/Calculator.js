@@ -135,6 +135,3 @@ class Calculator {
     return finalResult;
   }
 }
-
-const calc = new Calculator('-45x10x30-10+20/10x20');
-calc.calculator();
