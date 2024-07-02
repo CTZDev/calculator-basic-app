@@ -22,12 +22,14 @@ const calculatorApp = (screen) => {
     if ($val === '+/-' && !isNaN(parseFloat($display))) {
       const parserValue = parseFloat($display);
       $screen.textContent = parserValue * -1;
+      return;
     }
 
     if ($val === '%' && !isNaN(parseFloat($display))) {
       let percentaje = 100;
       const ans = parseFloat($display) / percentaje;
       $screen.textContent = ans;
+      return;
     }
 
     if ($val === 'DEL') {
@@ -40,6 +42,7 @@ const calculatorApp = (screen) => {
       }
       if (sizeDisplay === 1 && $screen.textContent !== '-') return ($screen.textContent = '0');
       $screen.textContent = newDisplay;
+      return;
     }
 
     /* All numbers */
@@ -49,7 +52,7 @@ const calculatorApp = (screen) => {
       activeSignal = false;
       return;
     }
-    h;
+
     /* All signals */
     if (signals.includes($val)) {
       if ($display.length === 1 && $val === '-') {
@@ -61,11 +64,13 @@ const calculatorApp = (screen) => {
       if (!activeSignal && signals.includes($val)) {
         activeSignal = true;
         $screen.textContent += $val;
+        return;
       }
     }
 
     if ($val === '=') {
       if (signals.includes($display.at(-1))) return alert('Error en la operación');
+      return;
     }
   });
 };
