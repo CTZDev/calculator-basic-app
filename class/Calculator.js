@@ -32,7 +32,7 @@ class Calculator {
   operationFirstOrder() {
     const firstOrder = ['x', '/'];
     const size = this.display.length;
-    const regexNumbers = /^[0-9]$/;
+    const regexNumbers = /^[0-9.]$/;
     let result = '';
     let groupInit = '';
     let groupEnd = '';
@@ -87,11 +87,12 @@ class Calculator {
   }
 
   /* Aqui operar de izquierda a derecha (+/-) */
-  operationSecondOrder(op) {
+  operationSecondOrder() {
+    const op = this.operationFirstOrder();
     let groupInit = '';
     let groupEnd = '';
     const size = op.length;
-    const regexNumbers = /^[0-9]$/;
+    const regexNumbers = /^[0-9.]$/;
     let sign = '';
     let isActiveGroups = false;
 
@@ -129,9 +130,17 @@ class Calculator {
     return groupInit;
   }
 
-  calculator() {
+  calculate() {
     const resultFirstOrder = this.operationFirstOrder();
-    const finalResult = this.operationSecondOrder(resultFirstOrder);
-    return finalResult;
+    /* Si ya existe un resultado, retorna el valor */
+    if (!isNaN(resultFirstOrder)) return resultFirstOrder;
+
+    const resultSecondOrder = this.operationSecondOrder();
+    return resultSecondOrder;
   }
 }
+
+export default Calculator;
+
+// const calc = new Calculator('375.1/5');
+// calc.calculate();

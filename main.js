@@ -1,76 +1,119 @@
-const regexNumbers = /^[0-9]$/;
-const signals = ['+', '-', 'x', '/'];
-
-const convertOperation = () => {};
-
-const disabledButtons = () => {};
+import Calculator from './class/Calculator.js';
 
 const calculatorApp = (screen) => {
   const $screen = document.getElementById(screen);
-  let activeSignal = false;
+  const regexNumbers = /^[0-9]$/;
+  const signs = ['+', '-', 'x', '/'];
+  let activeSignSubstract = false;
+  let activeDot = false;
 
   document.addEventListener('click', (e) => {
-    const $val = e.target.value;
+    const $btnSelected = e.target.value;
     const $display = $screen.textContent;
 
-    if ($val === 'AC') {
+    if ($btnSelected === 'AC') {
       $screen.textContent = '0';
-      activeSignal = false;
+      activeSignSubstract = false;
+      activeDot = false;
       return;
     }
 
-    if ($val === '+/-' && !isNaN(parseFloat($display))) {
+    if ($btnSelected === '+/-' && !isNaN(parseFloat($display))) {
       const parserValue = parseFloat($display);
       $screen.textContent = parserValue * -1;
       return;
     }
 
-    if ($val === '%' && !isNaN(parseFloat($display))) {
+    if ($btnSelected === '%' && !isNaN(parseFloat($display))) {
       let percentaje = 100;
       const ans = parseFloat($display) / percentaje;
+      const ansToString = ans.toString();
+      if (ansToString.includes('.')) activeDot = true;
       $screen.textContent = ans;
       return;
     }
 
-    if ($val === 'DEL') {
+    if ($btnSelected === 'DEL') {
       const sizeDisplay = $screen.textContent.length;
       const lastValue = $screen.textContent.at(-1);
+      const prevLastValue = $screen.textContent.at(-2);
       const newDisplay = $display.slice(0, sizeDisplay - 1);
-      /* (1) For validate in cases with ..-e10, etc. */
-      if ((lastValue === '-' && !newDisplay.includes('-')) || signals.includes(lastValue)) {
-        activeSignal = false;
+
+      /* Validate when the length is equal to one o screen is zero */
+      if ($display === '0') return;
+      if ($display.length === 1) return ($screen.textContent = '0');
+
+      /* Control sign substract, for no repeat */
+      if (regexNumbers.test(lastValue) && prevLastValue === '-') {
+        activeSignSubstract = true;
       }
-      if (sizeDisplay === 1 && $screen.textContent !== '-') return ($screen.textContent = '0');
+
+      if (lastValue === '-') {
+        activeSignSubstract = false;
+      }
+
+      /* Control sign dot, for no repeat */
+      if (lastValue === '.') {
+        activeDot = false;
+      }
+
+      //! Controlar el flujo del punto y DEL
+      if (signs.includes(lastValue) && !activeDot) {
+        activeDot = true;
+      }
+
       $screen.textContent = newDisplay;
       return;
     }
 
     /* All numbers */
-    if (regexNumbers.test($val)) {
-      if ($display[0] === '0' && $display.length === 1) $screen.textContent = '';
-      $screen.textContent += $val;
-      activeSignal = false;
+    if (regexNumbers.test($btnSelected)) {
+      if ($display === '0' && $display.length === 1) $screen.textContent = '';
+      $screen.textContent += $btnSelected;
+      activeSignSubstract = false;
       return;
     }
 
-    /* All signals */
-    if (signals.includes($val)) {
-      if ($display.length === 1 && $val === '-') {
-        $screen.textContent = $val;
+    /* All signs */
+    if (signs.includes($btnSelected)) {
+      /* Active dot */
+      activeDot = false;
+
+      /* Sign Substract */
+      if ($display.length === 1 && $btnSelected === '-' && $display === '0') {
+        $screen.textContent = $btnSelected;
         return;
       }
 
-      /* Just active signals when not exist */
-      if (!activeSignal && signals.includes($val)) {
-        activeSignal = true;
-        $screen.textContent += $val;
+      /* Just active sign substract when not exist */
+      if (!activeSignSubstract) {
+        activeSignSubstract = true;
+        $screen.textContent += $btnSelected;
         return;
       }
     }
 
-    if ($val === '=') {
-      if (signals.includes($display.at(-1))) return alert('Error en la operación');
-      return;
+    if ($btnSelected === '.' && !activeDot) {
+      activeDot = true;
+      $screen.textContent += $btnSelected;
+    }
+
+    if ($btnSelected === '=') {
+      if (signs.includes($display.at(-1))) {
+        alert('Error en la operación');
+        $screen.textContent = $display.slice(0, -1);
+        activeSignSubstract = false;
+        return;
+      }
+
+      if (!/[+x/-]/.test($display)) return;
+
+      const calc = new Calculator($screen.textContent);
+      const res = calc.calculate();
+      if (!res) return alert('Corrige tu operación!!!');
+      /* Active dot for decimal results */
+      activeDot = res.toString().includes('.');
+      $screen.textContent = res;
     }
   });
 };
