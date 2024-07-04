@@ -57,7 +57,7 @@ const calculatorApp = (screen) => {
         activeDot = false;
       }
 
-      //! Controlar el flujo del punto y DEL
+      /* If there is sign in last value and activeDot is false, will change */
       if (signs.includes(lastValue) && !activeDot) {
         activeDot = true;
       }
