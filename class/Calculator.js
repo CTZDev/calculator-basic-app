@@ -50,7 +50,8 @@ class Calculator {
       sign = this.display[j];
       let ans = '';
       let hasGroupEnd = false;
-      /* Significa que es signo de primer orden */
+
+      /* Means that it is a sign of first order */
       while (firstOrder.includes(sign)) {
         while (j < size && regexNumbers.test(this.display[++j])) {
           groupEnd += this.display[j];
@@ -86,7 +87,7 @@ class Calculator {
     return result;
   }
 
-  /* Aqui operar de izquierda a derecha (+/-) */
+  /* here operate left to right (+/-) */
   operationSecondOrder() {
     const op = this.operationFirstOrder();
     let groupInit = '';
@@ -99,8 +100,6 @@ class Calculator {
     const firstValue = op[0];
     if (firstValue === '-') groupInit += firstValue;
 
-    /* 13500-10+40 */
-    /* -13500-10+40 */
     for (let i = groupInit.length; i < size; i++) {
       let j = i;
       while (j < size && regexNumbers.test(op[j])) {
@@ -132,7 +131,7 @@ class Calculator {
 
   calculate() {
     const resultFirstOrder = this.operationFirstOrder();
-    /* Si ya existe un resultado, retorna el valor */
+    /* If result exist, return to value */
     if (!isNaN(resultFirstOrder)) return resultFirstOrder;
 
     const resultSecondOrder = this.operationSecondOrder();
@@ -141,6 +140,3 @@ class Calculator {
 }
 
 export default Calculator;
-
-// const calc = new Calculator('375.1/5');
-// calc.calculate();
